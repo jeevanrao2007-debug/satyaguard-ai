@@ -1,0 +1,6 @@
+{
+  "name": "SatyaGuard AI",
+  "description": "An AI-powered Digital Trust & Decision Intelligence Platform that helps users determine whether digital content is trustworthy.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

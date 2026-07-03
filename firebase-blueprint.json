@@ -1,0 +1,98 @@
+{
+  "entities": {
+    "Scan": {
+      "title": "Threat Scan",
+      "description": "Represents an individual analyzed file, screenshot, or text snippet",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "UID of the user performing the scan"
+        },
+        "sourceType": {
+          "type": "string",
+          "enum": ["text", "image", "audio"],
+          "description": "The type of media analyzed"
+        },
+        "content": {
+          "type": "string",
+          "description": "The analyzed text or URL of the uploaded asset"
+        },
+        "riskScore": {
+          "type": "number",
+          "description": "Computed threat score from 0 (Safe) to 100 (Critical)"
+        },
+        "confidenceScore": {
+          "type": "number",
+          "description": "AI confidence in its classification from 0 to 1"
+        },
+        "threatCategory": {
+          "type": "string",
+          "description": "Categorized threat type (e.g., Scam, Phishing, Misinformation, Safe)"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Threat severity level"
+        },
+        "explanation": {
+          "type": "string",
+          "description": "Detailed AI reasoning for the classification"
+        },
+        "evidence": {
+          "type": "string",
+          "description": "Identified indicators (suspicious URLs, high pressure, deepfakes)"
+        },
+        "recommendedActions": {
+          "type": "string",
+          "description": "Actionable security protocols for the user"
+        },
+        "language": {
+          "type": "string",
+          "description": "Preferred language of the output"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the scan"
+        }
+      },
+      "required": ["userId", "sourceType", "content", "riskScore", "confidenceScore", "threatCategory", "severity", "createdAt"]
+    },
+    "KnowledgeChunk": {
+      "title": "Knowledge Chunk",
+      "description": "Chunked security bulletins or official warnings used for grounding the RAG pipeline",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Source warning title"
+        },
+        "sourceUrl": {
+          "type": "string",
+          "description": "Source link (e.g. cybercrime.gov.in)"
+        },
+        "text": {
+          "type": "string",
+          "description": "Text content of the chunk"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Ingestion timestamp"
+        }
+      },
+      "required": ["title", "text", "createdAt"]
+    }
+  },
+  "firestore": {
+    "scans/{scanId}": {
+      "schema": "Scan",
+      "description": "Stores analyzed threat scans for audit and dashboard history."
+    },
+    "knowledge/{chunkId}": {
+      "schema": "KnowledgeChunk",
+      "description": "Trusted references used to ground Gemini reasoning."
+    }
+  }
+}

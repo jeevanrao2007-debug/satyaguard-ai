@@ -1,0 +1,40 @@
+steps:
+  # 1. Build the container image using Dockerfile
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '$_AR_REGISTRY/satyaguard-ai:$COMMIT_SHA'
+      - '.'
+
+  # 2. Push the container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '$_AR_REGISTRY/satyaguard-ai:$COMMIT_SHA'
+
+  # 3. Deploy the container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'satyaguard-ai'
+      - '--image=$_AR_REGISTRY/satyaguard-ai:$COMMIT_SHA'
+      - '--region=$LOCATION'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      # Mount secrets for Gemini and Firebase (values are reference references to Secret Manager)
+      - '--update-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,FIREBASE_PROJECT_ID=FIREBASE_PROJECT_ID:latest,FIREBASE_CLIENT_EMAIL=FIREBASE_CLIENT_EMAIL:latest,FIREBASE_PRIVATE_KEY=FIREBASE_PRIVATE_KEY:latest'
+
+images:
+  - '$_AR_REGISTRY/satyaguard-ai:$COMMIT_SHA'
+
+substitutions:
+  # Default location for the Cloud Run deployment
+  LOCATION: us-central1
+  # Artifact Registry endpoint (e.g., us-central1-docker.pkg.dev/my-project/my-repo)
+  _AR_REGISTRY: 'gcr.io/$PROJECT_ID'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
